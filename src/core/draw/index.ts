@@ -13,6 +13,7 @@ export class Draw implements ICore {
   constructor(screen: IScreen) {
     this.screen = screen;
   }
+  name: string = "Draw";
 
   private draw() {
     this.screen.clear();
@@ -23,6 +24,8 @@ export class Draw implements ICore {
   }
 
   public start() {
+    this.draw();
+
     let mousedown = false;
 
     let keyPressed = "";
