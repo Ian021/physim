@@ -1,3 +1,5 @@
+import { ButtonProps } from "./ButtonProps";
+
 export interface IScreen {
   clear(): void;
   draw(
@@ -7,4 +9,5 @@ export interface IScreen {
     endY: number,
     newLine?: boolean
   ): void;
+  button(props: ButtonProps): void;
 }
