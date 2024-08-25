@@ -2,10 +2,24 @@ import { IScreen } from "../../screen";
 import { ICore } from "../types/Core";
 
 export class Draw implements ICore {
-  screen: IScreen;
+  private screen: IScreen;
+  private objects: {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  }[] = [];
 
   constructor(screen: IScreen) {
     this.screen = screen;
+  }
+
+  private draw() {
+    this.screen.clear();
+
+    this.objects.forEach(({ startX, startY, endX, endY }) => {
+      this.screen.draw(startX, startY, endX, endY);
+    });
   }
 
   public start() {
@@ -18,21 +32,21 @@ export class Draw implements ICore {
     let endX = 0;
     let endY = 0;
 
-    const objects: {
-      startX: number;
-      startY: number;
-      endX: number;
-      endY: number;
-    }[] = [];
-
     document.addEventListener("keydown", (e) => {
       keyPressed = e.key;
+
+      if (e.ctrlKey && e.key === "z") {
+        this.objects.pop();
+
+        this.draw();
+      }
     });
 
     document.addEventListener("keyup", (e) => {
       if (keyPressed === "Escape") {
-        objects.length = 0;
-        this.screen.clear();
+        this.objects.length = 0;
+
+        this.draw();
       }
 
       if (keyPressed === e.key) {
@@ -51,14 +65,10 @@ export class Draw implements ICore {
     document.addEventListener("mousemove", (e) => {
       if (!mousedown) return;
 
-      this.screen.clear();
-
       endX = e.clientX;
       endY = e.clientY;
 
-      objects.forEach(({ startX, startY, endX, endY }) => {
-        this.screen.draw(startX, startY, endX, endY);
-      });
+      this.draw();
 
       let newLine = true;
 
@@ -69,7 +79,7 @@ export class Draw implements ICore {
       this.screen.draw(startX, startY, endX, endY, newLine);
 
       if (keyPressed === "Shift") {
-        objects.push({ startX, startY, endX, endY });
+        this.objects.push({ startX, startY, endX, endY });
 
         startX = endX;
         startY = endY;
@@ -77,7 +87,7 @@ export class Draw implements ICore {
     });
 
     document.addEventListener("mouseup", () => {
-      objects.push({ startX, startY, endX, endY });
+      this.objects.push({ startX, startY, endX, endY });
       mousedown = false;
     });
   }
